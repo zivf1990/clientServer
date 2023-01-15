@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 
-const UserFiles = () => {
+const UserFiles = ({ userName }) => {
   const [fileNames, setFileNames] = useState([]);
 
   const fetchUserData = async () => {
-    const res = await fetch("http://localhost:8000/users/ziv");
+    const res = await fetch(`http://localhost:8000/users/${userName}`);
     const data = await res.json();
     console.log(data);
     setFileNames(data);
   };
 
   const fetchFile = async (fileName) => {
-    const res = await fetch(`http://localhost:8000/users/ziv/${fileName}`);
+    const res = await fetch(
+      `http://localhost:8000/users/${userName}/${fileName}`
+    );
     const data = await res.json();
     console.log(data);
   };
 
   useEffect(() => {
+    console.log(userName);
     fetchUserData();
   }, []);
 
