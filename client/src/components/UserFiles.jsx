@@ -27,7 +27,11 @@ const UserFiles = ({ userName }) => {
     <div className="file-names">
       {files.map(({ name, isAFile, size }) => {
         return (
-          <div onClick={() => fetchFile(name)} className="file">
+          <div
+            key={Math.random() * Number.MAX_SAFE_INTEGER}
+            onClick={() => fetchFile(name)}
+            className="file"
+          >
             {isAFile ? (
               <>
                 {/* File */}

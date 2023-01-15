@@ -15,14 +15,18 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    getUser();
-    // const response = await validateUser(await getUser(userInput.username));
-    // console.log(response);
+    getUser((data) => {
+      if (data) {
+        console.log("access granted");
+        navigate(`/home/${userInput.username}`);
+      } else {
+        console.log("access denied");
+      }
+    });
     console.log(userInput.username);
-    navigate(`/home/${userInput.username}`);
   };
 
-  const getUser = async () => {
+  const getUser = async (cb) => {
     const res = await fetch(`http://localhost:8000/users/validation`, {
       method: "PUT",
       headers: {
@@ -33,6 +37,7 @@ const Login = () => {
     const data = await res.json();
 
     console.log(data);
+    cb(data);
   };
 
   const validateUser = async (user) => {
@@ -40,7 +45,7 @@ const Login = () => {
     window.history.pushState(null, null, window.location.href);
     window.onpopstate = window.history.go(1);
 
-    navigate(`/home/${userInput.username}`);
+    // navigate(`/home/${userInput.username}`);
   };
 
   return (
