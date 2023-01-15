@@ -7,6 +7,7 @@ const Navigation = () => {
   return (
     <div>
       <Routes>
+        <Route path="/" element={<Login />} />
         <Route path="/home/:userName" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path={`users/:id/`}>

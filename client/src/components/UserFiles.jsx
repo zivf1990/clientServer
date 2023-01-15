@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 
 const UserFiles = ({ userName }) => {
-  const [fileNames, setFileNames] = useState([]);
+  const [files, setFiles] = useState([]);
 
   const fetchUserData = async () => {
     const res = await fetch(`http://localhost:8000/users/${userName}`);
     const data = await res.json();
     console.log(data);
-    setFileNames(data);
+    setFiles(data);
   };
 
   const fetchFile = async (fileName) => {
     const res = await fetch(
       `http://localhost:8000/users/${userName}/${fileName}`
     );
-    const data = await res.json();
-    console.log(data);
+    const fileData = await res.json();
+    console.log(fileData);
   };
 
   useEffect(() => {
@@ -25,15 +25,16 @@ const UserFiles = ({ userName }) => {
 
   return (
     <div className="file-names">
-      {fileNames.map((fileName) => {
+      {files.map(({ name, isAFile, size }) => {
         return (
-          <div onClick={() => fetchFile(fileName)} className="file">
+          <div onClick={() => fetchFile(name)} className="file">
             <img
               src="https://cdn.windowsreport.com/wp-content/uploads/2020/10/IMG-file-1200x1200.jpg"
               alt=""
               width={"150px"}
             />
-            <h4>{fileName}</h4>
+            <h4>{name}</h4>
+            <h4>{size.toString()}</h4>
           </div>
         );
       })}

@@ -25,16 +25,30 @@ const writeFile = (filePath, data) => {
   });
 };
 
-const readFile = async (filePath) => {
-  await fs.readFile(filePath, "utf8", (err, data) => {
+const readFile = (filePath, cb) => {
+  fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       console.error(err);
       return;
     }
-    userFiles = data;
-    console.log("userFiles: ", userFiles);
+
+    cb(data);
   });
 };
+
+const getStats = (fileOrFolderPath, cb) => {
+  fs.stat(fileOrFolderPath, (err, stats) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    cb({ isAFile: stats.isFile(), size: stats.size });
+  });
+};
+
+// readFile(`./files/ziv/file1.txt`, (data) => {
+// });
 
 const createDirectory = async (dirPath) => {
   if (!fs.existsSync(dirPath)) {
@@ -54,46 +68,73 @@ router.get("/", function (req, res, next) {
 
 //GET user files.
 router.get("/:username", async (req, res) => {
-  const fileNames = [];
-  fs.readdir(`./files/${req.params.username}`, (err, folder) => {
-    if (err) console.log(err);
-    else {
-      folder.forEach((file, index) => {
-        fileNames.push(file);
-
-        // const absolutePath = path.resolve("./files/", file);
-
-        // fs.readFile(absolutePath, "utf8", (err, data) => {
-        //   if (err) {
-        //     console.error(err);
-        //     return;
-        //   }
-        //   userFiles.push(data);
-        //   console.log(file, data);
-        // });
-        // if (index === folder.length - 1) res.json(fileNames);
-      });
-      res.json(fileNames);
-    }
-    console.log(fileNames);
+  readFolder(`./files/${req.params.username}`, (items) => {
+    console.log(items);
+    res.json(items);
   });
 });
 
+const readFolder = (folderPath, cb) => {
+  console.log("readFolder()");
+  const fileNames = [];
+
+  fs.readdir(folderPath, (err, folder) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    folder.forEach((item, index) => {
+      getStats(folderPath + "/" + item, ({ isAFile, size }) => {
+        fileNames.push({ name: item, isAFile: isAFile, size: size });
+        if (index === folder.length - 1) {
+          cb(fileNames);
+        }
+      });
+    });
+  });
+};
+
 router.get("/:username/:filename", async (req, res) => {
   // const absolutePath = path.resolve("./files/", file);
+  console.log("req.url ", req.url);
 
-  fs.readFile(
-    `./files/${req.params.username}/${req.params.filename}`,
-    (err, data) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      const file = data.toString();
-      console.log(file);
-      res.json(file);
+  fs.stat(`./files/${req.url}`, (err, stats) => {
+    if (err) {
+      console.error(err);
+      return;
     }
-  );
+
+    //File
+    if (stats.isFile()) {
+      fs.readFile(
+        `./files/${req.params.username}/${req.params.filename}`,
+        (err, data) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          const file = data.toString();
+          console.log(file);
+          res.json(file);
+        }
+      );
+    }
+    //Directory.
+    else if (stats.isDirectory()) {
+      const fileNames = [];
+      fs.readdir(`./files/${req.params.username}`, (err, folder) => {
+        if (err) console.log(err);
+        else {
+          folder.forEach((file, index) => {
+            fileNames.push(file);
+          });
+          res.json(fileNames);
+        }
+        console.log(fileNames);
+      });
+    }
+  });
 });
 
 // writeFile("ziv.txt", JSON.stringify(dummyData));
