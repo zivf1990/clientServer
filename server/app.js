@@ -29,15 +29,20 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get("/api/", (req, res) => {
-  let abc = fs.readFile('./abc.txt',(err)=>{
-    if(err)console.log(err);
-  })
-  res.send(JSON.stringify(abc));
-});
-
 //Routers
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+
+//global variables.
+let userFiles = [];
+const dummyData = [
+  { fileName: "test1", fileSize: "24kb", data: "24/02/2022" },
+  { fileName: "test2", fileSize: "24kb", data: "24/02/2022" },
+  { fileName: "test3", fileSize: "24kb", data: "24/02/2022" },
+  { fileName: "test4", fileSize: "24kb", data: "24/02/2022" },
+  { fileName: "test5", fileSize: "24kb", data: "24/02/2022" },
+  { fileName: "test6", fileSize: "24kb", data: "24/02/2022" },
+  { fileName: "test7", fileSize: "24kb", data: "24/02/2022" },
+];
 
 module.exports = app;
