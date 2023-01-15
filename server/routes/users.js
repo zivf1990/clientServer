@@ -36,6 +36,17 @@ const readFile = async (filePath) => {
   });
 };
 
+const createDirectory = async (dirPath) => {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdir(dirPath, (err) => {
+      if (err) console.log(err);
+      else console.log("Directory  created: ", dirPath);
+    });
+  }
+};
+
+// createDirectory("./files/ziv");
+
 /* GET users listing. */
 router.get("/", function (req, res, next) {
   res.send("respond with a resource");
@@ -43,9 +54,31 @@ router.get("/", function (req, res, next) {
 
 //GET user files.
 router.get("/:username", async (req, res) => {
-  // writeFile("ziv.txt", JSON.stringify(dummyData));
-  await readFile(`${req.params.username}.txt`);
-  res.send(userFiles);
+  const fileNames = [];
+  fs.readdir(`./files/${req.params.username}`, (err, folder) => {
+    if (err) console.log(err);
+    else {
+      folder.forEach((file, index) => {
+        fileNames.push(file);
+
+        // const absolutePath = path.resolve("./files/", file);
+
+        // fs.readFile(absolutePath, "utf8", (err, data) => {
+        //   if (err) {
+        //     console.error(err);
+        //     return;
+        //   }
+        //   userFiles.push(data);
+        //   console.log(file, data);
+        // });
+        // if (index === folder.length - 1) res.json(fileNames);
+      });
+      res.json(fileNames);
+    }
+    console.log(fileNames);
+  });
 });
 
+// writeFile("ziv.txt", JSON.stringify(dummyData));
+// await readFile(`${req.params.username}.txt`);
 module.exports = router;
