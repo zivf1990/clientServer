@@ -4,11 +4,13 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const fs = require("fs");
 
 //import routers.
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
+//initialize express.
 const app = express();
 
 //Settings.

@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+}
+
+.App {
+  text-align: center;
+}
+
+.side-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px 20px;
+
+  .row {
+    border: 2px solid black;
+  }
+}
