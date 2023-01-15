@@ -14,4 +14,11 @@
 }
 .side-bar .row {
   border: 2px solid black;
+}
+
+.file-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 30px;
 }/*# sourceMappingURL=main.css.map */
