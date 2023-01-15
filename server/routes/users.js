@@ -79,6 +79,23 @@ router.get("/:username", async (req, res) => {
   });
 });
 
+router.get("/:username/:filename", async (req, res) => {
+  // const absolutePath = path.resolve("./files/", file);
+
+  fs.readFile(
+    `./files/${req.params.username}/${req.params.filename}`,
+    (err, data) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      const file = data.toString();
+      console.log(file);
+      res.json(file);
+    }
+  );
+});
+
 // writeFile("ziv.txt", JSON.stringify(dummyData));
 // await readFile(`${req.params.username}.txt`);
 module.exports = router;
