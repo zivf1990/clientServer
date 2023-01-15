@@ -30,7 +30,10 @@ app.use(function (req, res, next) {
 });
 
 app.get("/api/", (req, res) => {
-  res.send("api");
+  let abc = fs.readFile('./abc.txt',(err)=>{
+    if(err)console.log(err);
+  })
+  res.send(JSON.stringify(abc));
 });
 
 //Routers
