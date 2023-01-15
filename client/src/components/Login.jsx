@@ -15,17 +15,24 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    getUser();
     // const response = await validateUser(await getUser(userInput.username));
     // console.log(response);
     console.log(userInput.username);
     navigate(`/home/${userInput.username}`);
   };
 
-  const getUser = async (username) => {
-    // const res = await fetch(
-    //   `https://jsonplaceholder.typicode.com/users?username=${username}`
-    // );
+  const getUser = async () => {
+    const res = await fetch(`http://localhost:8000/users/validation`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userInput),
+    });
+    const data = await res.json();
+
+    console.log(data);
   };
 
   const validateUser = async (user) => {

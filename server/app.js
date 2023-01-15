@@ -9,6 +9,7 @@ const fs = require("fs");
 //import routers.
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const filesRouter = require("./routes/files");
 
 //initialize express.
 const app = express();
@@ -32,6 +33,7 @@ app.use(function (req, res, next) {
 //Routers
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/files", filesRouter);
 
 //global variables.
 let userFiles = [];
