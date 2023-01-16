@@ -5,6 +5,7 @@ const UserFiles = ({ userName }) => {
   const [files, setFiles] = useState([]);
   const [showFileForm, setShowFileForm] = useState(false);
   const [showFolderForm, setShowFolderForm] = useState(false);
+  const [itemInput, setItemInput] = useState({ fileName: "", folderName: "" });
 
   const fetchUserData = async () => {
     const res = await fetch(`http://localhost:8000/files/${userName}`);
@@ -21,9 +22,43 @@ const UserFiles = ({ userName }) => {
     console.log(fileData);
   };
 
-  const createItem = (name, isAFile) => {};
+  const createItem = async (name, isAFile) => {
+    console.log("createItem() ", name, isAFile);
+
+    const { fileName, folderName } = itemInput;
+
+    if (isAFile === "file") {
+      setShowFileForm(false);
+      const res = await fetch(`http://localhost:8000/files/newfile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ itemName: fileName }),
+      });
+      console.log(res);
+    }
+    //Create a folder
+    else {
+      setShowFolderForm(false);
+      const res = await fetch(`http://localhost:8000/files/newfolder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ itemName: folderName }),
+      });
+      console.log(res);
+    }
+  };
 
   const copyItem = (name, isAFile) => {};
+
+  const renameItem = (name, isAFile) => {};
+
+  const getInfo = (name) => {
+    
+  };
 
   const removeItem = async (itemName, isAFile) => {
     const res = await fetch(
@@ -46,6 +81,11 @@ const UserFiles = ({ userName }) => {
 
   const moveItem = (name, isAFile) => {};
 
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
+    setItemInput((prevUser) => ({ ...prevUser, [name]: value }));
+  };
+
   useEffect(() => {
     console.log(userName);
     fetchUserData();
@@ -62,22 +102,39 @@ const UserFiles = ({ userName }) => {
         </button>
         {showFileForm ? (
           <div className="form">
-            <input type="text" placeholder="enter name" />
-            <button onClick={() => createItem("file")}>ok</button>
+            <input
+              name="fileName"
+              value={itemInput.fileName}
+              onChange={handleChange}
+              type="text"
+              placeholder="enter name"
+            />
+            <button onClick={() => createItem(itemInput.fileName, "file")}>
+              ok
+            </button>
           </div>
         ) : (
           ""
         )}
-        <button
-          className="create-folder"
+        <span
+          className="create-folder bx bxs-folder-plus"
           onClick={() => setShowFolderForm(showFolderForm ? false : true)}
         >
           Create Folder
-        </button>
+        </span>
+
         {showFolderForm ? (
           <div className="form">
-            <input type="text" placeholder="enter name" />
-            <button onClick={() => createItem("folder")}>ok</button>
+            <input
+              name="folderName"
+              value={itemInput.folderName}
+              onChange={handleChange}
+              type="text"
+              placeholder="enter name"
+            />
+            <button onClick={() => createItem(itemInput.folderName, "folder")}>
+              ok
+            </button>
           </div>
         ) : (
           ""
@@ -94,6 +151,9 @@ const UserFiles = ({ userName }) => {
               size={size}
               copyItem={copyItem}
               removeItem={removeItem}
+              moveItem={moveItem}
+              renameItem={renameItem}
+              getInfo={getInfo}
             />
           );
         })}

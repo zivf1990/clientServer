@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 
-const Item = ({ itemName, isAFile, fetchFile, size, copyItem, removeItem }) => {
+const Item = ({
+  itemName,
+  isAFile,
+  fetchFile,
+  copyItem,
+  removeItem,
+  moveItem,
+  renameItem,
+  getInfo,
+}) => {
   const [displayOptions, setDisplayOptions] = useState(false);
 
   return (
@@ -35,22 +44,34 @@ const Item = ({ itemName, isAFile, fetchFile, size, copyItem, removeItem }) => {
         </>
       )}
       <h4>{itemName}</h4>
-      <h4>{size}kb</h4>
       {displayOptions && (
         <div className="options">
+          <span onClick={() => getInfo(itemName)} className="bx bx-info-circle">
+            info
+          </span>
           <span
             onClick={() => copyItem(itemName, isAFile)}
             className="bx bx-copy"
           >
-            {" "}
             copy
           </span>
           <span
             onClick={() => removeItem(itemName, isAFile)}
             className="bx bxs-x-square"
           >
-            {" "}
             delete
+          </span>
+          <span
+            onClick={() => renameItem(itemName, isAFile)}
+            className="bx bxs-edit-alt"
+          >
+            rename
+          </span>
+          <span
+            onClick={() => moveItem(itemName, isAFile)}
+            className="bx bxs-right-arrow-square"
+          >
+            move
           </span>
         </div>
       )}

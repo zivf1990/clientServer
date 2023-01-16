@@ -26,8 +26,8 @@ const fileSys = {
       folder.forEach((item, index) => {
         module.exports.getStats(
           folderPath + "/" + item,
-          ({ isAFile, size }) => {
-            fileNames.push({ itemName: item, isAFile: isAFile, size: size });
+          ({ isAFile, stats }) => {
+            fileNames.push({ itemName: item, isAFile: isAFile, stats: stats });
             if (index === folder.length - 1) {
               cb(fileNames);
             }
@@ -44,7 +44,7 @@ const fileSys = {
         return;
       }
 
-      cb({ isAFile: stats.isFile(), size: stats.size });
+      cb({ isAFile: stats.isFile(), stats: stats });
     });
   },
   deleteFile: (file, cb) => {

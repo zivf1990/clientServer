@@ -14,7 +14,7 @@ router.get("/", function (req, res, next) {
   res.send("main");
 });
 
-//GET user files.
+//GET user top level items.
 router.get("/:username", async (req, res) => {
   readFolder(`./files/${req.params.username}`, (items) => {
     console.log(items);
@@ -39,6 +39,14 @@ router.delete("/:username/:filename", async (req, res) => {
       res.send(result);
     });
   }
+});
+
+router.post(`/newfile`, async (req, res) => {
+  console.log("files recieved POST req to create new file");
+});
+
+router.post(`/newfolder`, async (req, res) => {
+  console.log("files recieved POST req to create new folder");
 });
 
 //open file/folder.
