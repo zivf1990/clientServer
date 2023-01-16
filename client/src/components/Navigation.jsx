@@ -9,6 +9,7 @@ const Navigation = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home/:userName" element={<Home />} />
+        <Route path="/home/:userName/:path" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path={`users/:id/`}>
           {/* <Route path="Albums" element={<Albums />} />

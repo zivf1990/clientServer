@@ -1,25 +1,51 @@
 import React, { useEffect, useState } from "react";
 import Item from "./Item";
 
-const UserFiles = ({ userName }) => {
+const UserFiles = ({ userName, path }) => {
   const [files, setFiles] = useState([]);
   const [showFileForm, setShowFileForm] = useState(false);
   const [showFolderForm, setShowFolderForm] = useState(false);
   const [itemInput, setItemInput] = useState({ fileName: "", folderName: "" });
 
+  useEffect(() => {
+    console.log(userName);
+    fetchUserData();
+  }, []);
+
   const fetchUserData = async () => {
-    const res = await fetch(`http://localhost:8000/files/${userName}`);
+    //.split(' ').join('%')
+
+    const res = await fetch(`http://localhost:8000/files/${userName}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+      body: JSON.stringify({ path: "" }),
+    });
     const data = await res.json();
     console.log(data);
     setFiles(data);
+
+    // const res = await fetch(
+    //   `http://localhost:8000/files/${userName}${
+    //     folderPath ? `/files/${folderPath}` : ""
+    //   }`
+    // );
+    // const data = await res.json();
+    // console.log(data);
+    // setFiles(data);
   };
 
+  //show the folder/file
   const fetchFile = async (fileName) => {
-    const res = await fetch(
-      `http://localhost:8000/files/${userName}/${fileName}`
-    );
-    const fileData = await res.json();
-    console.log(fileData);
+    // console.log("fetchFile() called", fileName);
+    // const res = await fetch(
+    //   `http://localhost:8000/files/${userName}${
+    //     fileName ? "/" + fileName : folderPath ? `/files/${folderPath}` : ""
+    //   }`
+    // );
+    // const fileData = await res.json();
+    // console.log(fileData);
   };
 
   const createItem = async (name, isAFile) => {
@@ -56,10 +82,6 @@ const UserFiles = ({ userName }) => {
 
   const renameItem = (name, isAFile) => {};
 
-  const getInfo = (name) => {
-    
-  };
-
   const removeItem = async (itemName, isAFile) => {
     const res = await fetch(
       `http://localhost:8000/files/${userName}/${itemName}`,
@@ -85,11 +107,6 @@ const UserFiles = ({ userName }) => {
     const { name, value } = target;
     setItemInput((prevUser) => ({ ...prevUser, [name]: value }));
   };
-
-  useEffect(() => {
-    console.log(userName);
-    fetchUserData();
-  }, []);
 
   return (
     <>
@@ -141,19 +158,18 @@ const UserFiles = ({ userName }) => {
         )}
       </div>
       <div className="file-names">
-        {files.map(({ itemName, isAFile, size }) => {
+        {files.map(({ itemName, isAFile, stats }) => {
           return (
             <Item
               key={Math.random() * Number.MAX_SAFE_INTEGER}
               itemName={itemName}
               isAFile={isAFile}
               fetchFile={fetchFile}
-              size={size}
               copyItem={copyItem}
               removeItem={removeItem}
               moveItem={moveItem}
               renameItem={renameItem}
-              getInfo={getInfo}
+              itemInfo={stats}
             />
           );
         })}

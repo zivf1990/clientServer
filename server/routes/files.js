@@ -9,13 +9,27 @@ const {
   deleteFolder,
 } = require("../public/javascripts/fileSys");
 
-/* GET files listing. */
 router.get("/", function (req, res, next) {
   res.send("main");
 });
 
+/* PUT files listing. */
+router.put("/:username", async (req, res) => {
+  const path = req?.body?.path;
+
+  console.log("PUT folder list ", path);
+  readFolder(
+    `${path ? `${path}` : `./files/${req.params.username}`}`,
+    (items) => {
+      // console.log(items);
+      res.json(items);
+    }
+  );
+});
+
 //GET user top level items.
 router.get("/:username", async (req, res) => {
+  console.log("GET user top ", "top");
   readFolder(`./files/${req.params.username}`, (items) => {
     console.log(items);
     res.json(items);

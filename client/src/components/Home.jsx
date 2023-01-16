@@ -3,14 +3,14 @@ import { useParams } from "react-router-dom";
 import UserFiles from "./UserFiles";
 
 const Home = () => {
-  const { userName } = useParams();
+  const { userName, path } = useParams();
 
-  console.log(userName);
+  console.log("Home ", path);
 
   return (
     <div className="home">
       Home Component
-      <UserFiles userName={userName} />
+      <UserFiles userName={userName} path={path} />
     </div>
   );
 };

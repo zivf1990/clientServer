@@ -24,15 +24,18 @@ const fileSys = {
       }
 
       folder.forEach((item, index) => {
-        module.exports.getStats(
-          folderPath + "/" + item,
-          ({ isAFile, stats }) => {
-            fileNames.push({ itemName: item, isAFile: isAFile, stats: stats });
-            if (index === folder.length - 1) {
-              cb(fileNames);
-            }
+        const path = folderPath + "/" + item;
+        module.exports.getStats(path, ({ isAFile, stats }) => {
+          fileNames.push({
+            itemName: item,
+            isAFile: isAFile,
+            stats: stats,
+            path: path,
+          });
+          if (index === folder.length - 1) {
+            cb(fileNames);
           }
-        );
+        });
       });
     });
   },

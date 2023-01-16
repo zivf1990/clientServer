@@ -8,9 +8,10 @@ const Item = ({
   removeItem,
   moveItem,
   renameItem,
-  getInfo,
+  itemInfo,
 }) => {
   const [displayOptions, setDisplayOptions] = useState(false);
+  const [displayInfo, setDisplayInfo] = useState(false);
 
   return (
     <div
@@ -46,7 +47,10 @@ const Item = ({
       <h4>{itemName}</h4>
       {displayOptions && (
         <div className="options">
-          <span onClick={() => getInfo(itemName)} className="bx bx-info-circle">
+          <span
+            onClick={() => setDisplayInfo(displayInfo ? false : true)}
+            className="bx bx-info-circle"
+          >
             info
           </span>
           <span
@@ -73,6 +77,14 @@ const Item = ({
           >
             move
           </span>
+
+          {displayInfo && (
+            <div className="item-info">
+              <h6> Size: {itemInfo.size}kb</h6>
+              <h6>Created: {itemInfo.birthtime}</h6>
+              <h6>Changed: {itemInfo.ctime}</h6>
+            </div>
+          )}
         </div>
       )}
     </div>
