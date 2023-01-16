@@ -3,12 +3,13 @@ import React, { useState } from "react";
 const Item = ({
   itemName,
   isAFile,
-  fetchFile,
+  openItem,
   copyItem,
   removeItem,
   moveItem,
   renameItem,
   itemInfo,
+  path,
 }) => {
   const [displayOptions, setDisplayOptions] = useState(false);
   const [displayInfo, setDisplayInfo] = useState(false);
@@ -16,7 +17,7 @@ const Item = ({
   return (
     <div
       key={Math.random() * Number.MAX_SAFE_INTEGER}
-      onClick={() => fetchFile(itemName)}
+      onClick={() => openItem(path)}
       onContextMenu={(e) => {
         e.preventDefault();
         if (e.buttons == 2) {

@@ -4,12 +4,15 @@ import SideBar from "./components/SideBar";
 import UserFiles from "./components/UserFiles";
 import Login from "./components/Login";
 import Navigation from "./components/Navigation";
+import ItemPathProvider from "./context/ItemPathContext";
 
 function App() {
   return (
-    <div className="App">
-      <Navigation />
-    </div>
+    <ItemPathProvider>
+      <div className="App">
+        <Navigation />
+      </div>
+    </ItemPathProvider>
   );
 }
 

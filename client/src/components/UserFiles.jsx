@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useItemPath } from "../context/ItemPathContext";
+import { useHistory } from "react-router-dom";
 import Item from "./Item";
 
-const UserFiles = ({ userName, path }) => {
+const UserFiles = ({ userName }) => {
   const [files, setFiles] = useState([]);
   const [showFileForm, setShowFileForm] = useState(false);
   const [showFolderForm, setShowFolderForm] = useState(false);
   const [itemInput, setItemInput] = useState({ fileName: "", folderName: "" });
 
+  const navigate = useNavigate();
+
+  const { itemPath, setItemPath } = useItemPath();
+
   useEffect(() => {
     console.log(userName);
     fetchUserData();
-  }, []);
+  }, [itemPath]);
 
   const fetchUserData = async () => {
     //.split(' ').join('%')
@@ -20,7 +27,7 @@ const UserFiles = ({ userName, path }) => {
         "Content-Type": "application/json",
       },
       method: "PUT",
-      body: JSON.stringify({ path: "" }),
+      body: JSON.stringify({ path: itemPath }),
     });
     const data = await res.json();
     console.log(data);
@@ -37,15 +44,13 @@ const UserFiles = ({ userName, path }) => {
   };
 
   //show the folder/file
-  const fetchFile = async (fileName) => {
-    // console.log("fetchFile() called", fileName);
-    // const res = await fetch(
-    //   `http://localhost:8000/files/${userName}${
-    //     fileName ? "/" + fileName : folderPath ? `/files/${folderPath}` : ""
-    //   }`
-    // );
-    // const fileData = await res.json();
-    // console.log(fileData);
+  const openItem = async (itemPath) => {
+    const arr = itemPath.split("/");
+    const hash = arr[arr.length - 1];
+    const history = window.location.href;
+    console.log("open", hash);
+    navigate(hash);
+    setItemPath(itemPath);
   };
 
   const createItem = async (name, isAFile) => {
@@ -158,18 +163,19 @@ const UserFiles = ({ userName, path }) => {
         )}
       </div>
       <div className="file-names">
-        {files.map(({ itemName, isAFile, stats }) => {
+        {files.map(({ itemName, isAFile, stats, path }) => {
           return (
             <Item
               key={Math.random() * Number.MAX_SAFE_INTEGER}
               itemName={itemName}
               isAFile={isAFile}
-              fetchFile={fetchFile}
+              openItem={openItem}
               copyItem={copyItem}
               removeItem={removeItem}
               moveItem={moveItem}
               renameItem={renameItem}
               itemInfo={stats}
+              path={path}
             />
           );
         })}
