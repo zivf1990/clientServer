@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import Item from "./Item";
 
 const UserFiles = ({ userName }) => {
   const [files, setFiles] = useState([]);
+  const [showFileForm, setShowFileForm] = useState(false);
+  const [showFolderForm, setShowFolderForm] = useState(false);
 
   const fetchUserData = async () => {
     const res = await fetch(`http://localhost:8000/files/${userName}`);
@@ -18,47 +21,84 @@ const UserFiles = ({ userName }) => {
     console.log(fileData);
   };
 
+  const createItem = (name, isAFile) => {};
+
+  const copyItem = (name, isAFile) => {};
+
+  const removeItem = async (itemName, isAFile) => {
+    const res = await fetch(
+      `http://localhost:8000/files/${userName}/${itemName}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isAFile }),
+      }
+    );
+
+    const data = await res.json();
+    if (data) {
+      setFiles((prev) => prev.filter((item) => item.itemName !== itemName));
+    }
+    console.log("deleted item: ", data);
+  };
+
+  const moveItem = (name, isAFile) => {};
+
   useEffect(() => {
     console.log(userName);
     fetchUserData();
   }, []);
 
   return (
-    <div className="file-names">
-      {files.map(({ name, isAFile, size }) => {
-        return (
-          <div
-            key={Math.random() * Number.MAX_SAFE_INTEGER}
-            onClick={() => fetchFile(name)}
-            className="file"
-          >
-            {isAFile ? (
-              <>
-                {/* File */}
-                <img
-                  src="https://cdn.windowsreport.com/wp-content/uploads/2020/10/IMG-file-1200x1200.jpg"
-                  alt=""
-                  width={"150px"}
-                />
-                <h4>{name}</h4>
-                <h4>{size.toString()}</h4>
-              </>
-            ) : (
-              <>
-                {/* folder */}
-                <img
-                  src="https://img.freepik.com/free-vector/illustration-data-folder-icon_53876-6329.jpg?w=2000"
-                  alt=""
-                  width={"150px"}
-                />
-                <h4>{name}</h4>
-                <h4>{size.toString()}</h4>
-              </>
-            )}
+    <>
+      <div className="create-items-menu">
+        <button
+          className="create-file"
+          onClick={() => setShowFileForm(showFileForm ? false : true)}
+        >
+          Create File
+        </button>
+        {showFileForm ? (
+          <div className="form">
+            <input type="text" placeholder="enter name" />
+            <button onClick={() => createItem("file")}>ok</button>
           </div>
-        );
-      })}
-    </div>
+        ) : (
+          ""
+        )}
+        <button
+          className="create-folder"
+          onClick={() => setShowFolderForm(showFolderForm ? false : true)}
+        >
+          Create Folder
+        </button>
+        {showFolderForm ? (
+          <div className="form">
+            <input type="text" placeholder="enter name" />
+            <button onClick={() => createItem("folder")}>ok</button>
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+      <div className="file-names">
+        {files.map(({ itemName, isAFile, size }) => {
+          return (
+            <Item
+              key={Math.random() * Number.MAX_SAFE_INTEGER}
+              itemName={itemName}
+              isAFile={isAFile}
+              fetchFile={fetchFile}
+              size={size}
+              copyItem={copyItem}
+              removeItem={removeItem}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 };
 

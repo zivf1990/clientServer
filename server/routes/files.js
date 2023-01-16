@@ -1,69 +1,17 @@
 var express = require("express");
 var router = express.Router();
 const fs = require("fs");
-let userFiles = [];
-
-//The fs.unlink() method deletes the specified file.
-const deleteFile = (file) => {
-  fs.unlink(file, function (err) {
-    if (err) throw err;
-    console.log("File deleted!");
-  });
-};
-
-const renameFile = (file, newFileName) => {
-  fs.rename(file, newFileName, function (err) {
-    if (err) throw err;
-    console.log("File Renamed!");
-  });
-};
-
-const writeFile = (filePath, data) => {
-  fs.writeFile(filePath, data, function (err) {
-    if (err) throw err;
-    console.log("Saved!");
-  });
-};
-
-const readFile = (filePath, cb) => {
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    cb(data);
-  });
-};
-
-const getStats = (fileOrFolderPath, cb) => {
-  fs.stat(fileOrFolderPath, (err, stats) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    cb({ isAFile: stats.isFile(), size: stats.size });
-  });
-};
-
-// readFile(`./files/ziv/file1.txt`, (data) => {
-// });
-
-const createDirectory = async (dirPath) => {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdir(dirPath, (err) => {
-      if (err) console.log(err);
-      else console.log("Directory  created: ", dirPath);
-    });
-  }
-};
-
-// createDirectory("./files/ziv");
+const {
+  readFolder,
+  readFile,
+  getStats,
+  deleteFile,
+  deleteFolder,
+} = require("../public/javascripts/fileSys");
 
 /* GET files listing. */
 router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+  res.send("main");
 });
 
 //GET user files.
@@ -74,27 +22,26 @@ router.get("/:username", async (req, res) => {
   });
 });
 
-const readFolder = (folderPath, cb) => {
-  console.log("readFolder()");
-  const fileNames = [];
-
-  fs.readdir(folderPath, (err, folder) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    folder.forEach((item, index) => {
-      getStats(folderPath + "/" + item, ({ isAFile, size }) => {
-        fileNames.push({ name: item, isAFile: isAFile, size: size });
-        if (index === folder.length - 1) {
-          cb(fileNames);
-        }
-      });
+//Delete an item.
+router.delete("/:username/:filename", async (req, res) => {
+  console.log("delete request ", req.params);
+  const path = `./files/${req.params.username}/${req.params.filename}`;
+  console.log("body ", req.body);
+  //Deleting a File.
+  if (req.body.isAFile) {
+    deleteFile(path, (result) => {
+      res.send(result);
     });
-  });
-};
+  }
+  //Delete a Folder.
+  else {
+    deleteFolder(path, (result) => {
+      res.send(result);
+    });
+  }
+});
 
+//open file/folder.
 router.get("/:username/:filename", async (req, res) => {
   // const absolutePath = path.resolve("./files/", file);
   console.log("req.url ", req.url);
@@ -107,36 +54,22 @@ router.get("/:username/:filename", async (req, res) => {
 
     //File
     if (stats.isFile()) {
-      fs.readFile(
+      readFile(
         `./files/${req.params.username}/${req.params.filename}`,
-        (err, data) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          const file = data.toString();
-          console.log(file);
-          res.json(file);
+        (fileData) => {
+          console.log(fileData);
+          res.json(fileData);
         }
       );
     }
     //Directory.
     else if (stats.isDirectory()) {
-      const fileNames = [];
-      fs.readdir(`./files/${req.params.username}`, (err, folder) => {
-        if (err) console.log(err);
-        else {
-          folder.forEach((file, index) => {
-            fileNames.push(file);
-          });
-          res.json(fileNames);
-        }
-        console.log(fileNames);
+      readFolder(`./files/${req.params.username}`, (files) => {
+        res.json(files);
+        console.log(files);
       });
     }
   });
 });
 
-// writeFile("ziv.txt", JSON.stringify(dummyData));
-// await readFile(`${req.params.username}.txt`);
 module.exports = router;
