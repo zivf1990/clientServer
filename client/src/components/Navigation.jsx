@@ -8,8 +8,11 @@ const Navigation = () => {
     <div>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/home/:userName/:path" element={<Home />} />
-        <Route path="/home/:userName" element={<Home />} />
+        <Route path="/home">
+          <Route path=":userName/:path" element={<Home />} />
+          <Route path=":userName" element={<Home />} />
+        </Route>
+
         <Route path="/login" element={<Login />} />
         <Route path={`users/:id/`}>
           {/* <Route path="Albums" element={<Albums />} />

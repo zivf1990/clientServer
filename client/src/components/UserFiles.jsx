@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useItemPath } from "../context/ItemPathContext";
 import { useHistory } from "react-router-dom";
 import Item from "./Item";
@@ -11,15 +11,22 @@ const UserFiles = ({ userName }) => {
   const [itemInput, setItemInput] = useState({ fileName: "", folderName: "" });
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { itemPath, setItemPath } = useItemPath();
 
-  useEffect(() => {
-    console.log(userName);
-    fetchUserData();
-  }, [itemPath]);
+  // useEffect(() => {
+  //   console.log("location ", location.pathname);
+  // }, [location.pathname]);
 
-  const fetchUserData = async () => {
+  useEffect(() => {
+    const itemPath = location.pathname;
+    // console.log("itemPath", itemPath.replace("/home/", "./files/"));
+    setItemPath(itemPath);
+    fetchUserData(itemPath.replace("/home/", "./files/"));
+  }, [location.pathname]);
+
+  const fetchUserData = async (path) => {
     //.split(' ').join('%')
 
     const res = await fetch(`http://localhost:8000/files/${userName}`, {
@@ -27,7 +34,7 @@ const UserFiles = ({ userName }) => {
         "Content-Type": "application/json",
       },
       method: "PUT",
-      body: JSON.stringify({ path: itemPath }),
+      body: JSON.stringify({ path: path }),
     });
     const data = await res.json();
     console.log(data);

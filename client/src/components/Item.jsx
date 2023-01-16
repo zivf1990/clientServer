@@ -17,7 +17,7 @@ const Item = ({
   return (
     <div
       key={Math.random() * Number.MAX_SAFE_INTEGER}
-      onClick={() => openItem(path)}
+      onDoubleClick={() => openItem(path)}
       onContextMenu={(e) => {
         e.preventDefault();
         if (e.buttons == 2) {
