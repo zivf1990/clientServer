@@ -8,7 +8,9 @@ const UserFiles = ({ userName }) => {
   const [files, setFiles] = useState([]);
   const [showFileForm, setShowFileForm] = useState(false);
   const [showFolderForm, setShowFolderForm] = useState(false);
+  const [showItems, setShowItems] = useState(true);
   const [itemInput, setItemInput] = useState({ fileName: "", folderName: "" });
+  const [fileData, setFileData] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +22,9 @@ const UserFiles = ({ userName }) => {
   // }, [location.pathname]);
 
   useEffect(() => {
+    if (location.pathname === `/home/${userName}`) {
+      setShowItems(true);
+    }
     const itemPath = location.pathname;
     // console.log("itemPath", itemPath.replace("/home/", "./files/"));
     setItemPath(itemPath);
@@ -29,13 +34,16 @@ const UserFiles = ({ userName }) => {
   const fetchUserData = async (path) => {
     //.split(' ').join('%')
 
-    const res = await fetch(`http://localhost:8000/files/${userName}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "PUT",
-      body: JSON.stringify({ path: path }),
-    });
+    const res = await fetch(
+      `http://localhost:8000/files/${userName}/readfolder`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PUT",
+        body: JSON.stringify({ path: path }),
+      }
+    );
     const data = await res.json();
     console.log(data);
     setFiles(data);
@@ -50,14 +58,41 @@ const UserFiles = ({ userName }) => {
     // setFiles(data);
   };
 
+  //Fetch a file.
+  const fetchFile = async (itemPath) => {
+    console.log("fetchFile", itemPath);
+    const res = await fetch(
+      `http://localhost:8000/files/${userName}/readfile`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PUT",
+        body: JSON.stringify({ path: itemPath }),
+      }
+    );
+
+    const data = await res.json();
+    setFileData(data);
+  };
+
   //show the folder/file
-  const openItem = async (itemPath) => {
-    const arr = itemPath.split("/");
-    const hash = arr[arr.length - 1];
-    const history = window.location.href;
-    console.log("open", hash);
-    navigate(hash);
-    setItemPath(itemPath);
+  const openItem = async (itemPath, isAFile) => {
+    if (isAFile) {
+      fetchFile(itemPath);
+      setShowItems(false);
+      const arr = itemPath.split("/");
+      const hash = arr[arr.length - 1];
+      navigate(hash);
+    } else {
+      const arr = itemPath.split("/");
+      const hash = arr[arr.length - 1];
+
+      // const history = window.location.href;
+      console.log("open", hash);
+      navigate(hash);
+      // setItemPath(itemPath);
+    }
   };
 
   const createItem = async (name, isAFile) => {
@@ -122,71 +157,79 @@ const UserFiles = ({ userName }) => {
 
   return (
     <>
-      <div className="create-items-menu">
-        <button
-          className="create-file"
-          onClick={() => setShowFileForm(showFileForm ? false : true)}
-        >
-          Create File
-        </button>
-        {showFileForm ? (
-          <div className="form">
-            <input
-              name="fileName"
-              value={itemInput.fileName}
-              onChange={handleChange}
-              type="text"
-              placeholder="enter name"
-            />
-            <button onClick={() => createItem(itemInput.fileName, "file")}>
-              ok
+      {showItems && (
+        <div className="user-files">
+          <div className="create-items-menu">
+            <button
+              className="create-file"
+              onClick={() => setShowFileForm(showFileForm ? false : true)}
+            >
+              Create File
             </button>
-          </div>
-        ) : (
-          ""
-        )}
-        <span
-          className="create-folder bx bxs-folder-plus"
-          onClick={() => setShowFolderForm(showFolderForm ? false : true)}
-        >
-          Create Folder
-        </span>
+            {showFileForm ? (
+              <div className="form">
+                <input
+                  name="fileName"
+                  value={itemInput.fileName}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="enter name"
+                />
+                <button onClick={() => createItem(itemInput.fileName, "file")}>
+                  ok
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
+            <span
+              className="create-folder bx bxs-folder-plus"
+              onClick={() => setShowFolderForm(showFolderForm ? false : true)}
+            >
+              Create Folder
+            </span>
 
-        {showFolderForm ? (
-          <div className="form">
-            <input
-              name="folderName"
-              value={itemInput.folderName}
-              onChange={handleChange}
-              type="text"
-              placeholder="enter name"
-            />
-            <button onClick={() => createItem(itemInput.folderName, "folder")}>
-              ok
-            </button>
+            {showFolderForm ? (
+              <div className="form">
+                <input
+                  name="folderName"
+                  value={itemInput.folderName}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="enter name"
+                />
+                <button
+                  onClick={() => createItem(itemInput.folderName, "folder")}
+                >
+                  ok
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
-        ) : (
-          ""
-        )}
-      </div>
-      <div className="file-names">
-        {files.map(({ itemName, isAFile, stats, path }) => {
-          return (
-            <Item
-              key={Math.random() * Number.MAX_SAFE_INTEGER}
-              itemName={itemName}
-              isAFile={isAFile}
-              openItem={openItem}
-              copyItem={copyItem}
-              removeItem={removeItem}
-              moveItem={moveItem}
-              renameItem={renameItem}
-              itemInfo={stats}
-              path={path}
-            />
-          );
-        })}
-      </div>
+          <div className="file-names">
+            {files.map(({ itemName, isAFile, stats, path }) => {
+              return (
+                <Item
+                  key={Math.random() * Number.MAX_SAFE_INTEGER}
+                  itemName={itemName}
+                  isAFile={isAFile}
+                  openItem={openItem}
+                  copyItem={copyItem}
+                  removeItem={removeItem}
+                  moveItem={moveItem}
+                  renameItem={renameItem}
+                  itemInfo={stats}
+                  path={path}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="file-data">{fileData}</div>
     </>
   );
 };

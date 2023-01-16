@@ -1,1 +1,9 @@
-dsasdsadsadsdsadsadsadsadsadsmdlksmlkdsmlksam
+
+How to listen to route changes in react router v4?https://stackoverflow.com › questions › how...
+לדף המתורגם
+19 במרץ 2017 · 14 תשובות
+I use withRouter to get the location prop. When the component is updated because of a new route, I check if the value changed: @withRouter class App extends ...
+Detect Route Change with react-router - Stack Overflow
+28 ביולי 2017
+how to listen for route change in react-router-dom v6
+9 בינו׳ 2022

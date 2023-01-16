@@ -14,10 +14,11 @@ const Item = ({
   const [displayOptions, setDisplayOptions] = useState(false);
   const [displayInfo, setDisplayInfo] = useState(false);
 
+
   return (
     <div
       key={Math.random() * Number.MAX_SAFE_INTEGER}
-      onDoubleClick={() => openItem(path)}
+      onDoubleClick={() => openItem(path, isAFile)}
       onContextMenu={(e) => {
         e.preventDefault();
         if (e.buttons == 2) {

@@ -4,7 +4,6 @@ const fs = require("fs");
 const {
   readFolder,
   readFile,
-  getStats,
   deleteFile,
   deleteFolder,
 } = require("../public/javascripts/fileSys");
@@ -14,27 +13,36 @@ router.get("/", function (req, res, next) {
 });
 
 /* PUT files listing. */
-router.put("/:username", async (req, res) => {
+router.put("/:username/readfolder", async (req, res) => {
   const path = req?.body?.path;
 
   console.log("PUT folder list ", path);
   readFolder(
     `${path ? `${path}` : `./files/${req.params.username}`}`,
     (items) => {
-      // console.log(items);
       res.json(items);
     }
   );
 });
 
-//GET user top level items.
-router.get("/:username", async (req, res) => {
-  console.log("GET user top ", "top");
-  readFolder(`./files/${req.params.username}`, (items) => {
-    console.log(items);
-    res.json(items);
+router.put("/:username/readfile", async (req, res) => {
+  const path = req?.body?.path;
+
+  readFile(path, (data) => {
+    res.json(data);
   });
+
+  console.log("PUT file list ", path);
 });
+
+//GET user top level items.
+// router.get("/:username", async (req, res) => {
+//   console.log("GET user top ", "top");
+//   readFolder(`./files/${req.params.username}`, (items) => {
+//     console.log(items);
+//     res.json(items);
+//   });
+// });
 
 //Delete an item.
 router.delete("/:username/:filename", async (req, res) => {

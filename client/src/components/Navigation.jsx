@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
+import File from "./File";
 import Home from "./Home";
 import Login from "./Login";
 
@@ -11,13 +12,10 @@ const Navigation = () => {
         <Route path="/home">
           <Route path=":userName/:path" element={<Home />} />
           <Route path=":userName" element={<Home />} />
+          <Route path=":userName/*" element={<Home />} />
         </Route>
 
-        <Route path="/login" element={<Login />} />
-        <Route path={`users/:id/`}>
-          {/* <Route path="Albums" element={<Albums />} />
-          <Route path="Albums/:albumId" element={<AlbumPage />} /> */}
-        </Route>
+        <Route path={`users/:id/`}></Route>
       </Routes>
     </div>
   );
